@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+
+import Home from './Components/Home'
+import Sidebar from './Components/Sidebar'
+import styled from 'styled-components';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <Home></Home>
+      <Sidebar></Sidebar>
+    </Container>
   );
 }
 
 export default App;
+
+
+const Container = styled.section`
+  display : grid;
+  grid-template-columns: 5rem calc(100vw - 5rem);
+  grid-template-rows:100vh ;
+
+  & nav {
+    grid-column:1/2;
+    grid-row:1/-1;
+   background-color: #15334b;
+
+  }
+
+  & section {
+    grid-column:2/-1;
+    grid-row:1/-1;
+    background-color: #EDEDF8;
+  }
+
+`;
+
+
