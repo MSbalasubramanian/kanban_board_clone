@@ -18,3 +18,12 @@ body {
   font-size:sans-serif;
   line-height : 1.6182;
 }
+
+a {
+    text-decoration:none ;
+    color:inherit;
+}
+
+::placeholder {
+  color:#949494f8;
+}

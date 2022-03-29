@@ -17,6 +17,7 @@ const Sidebar = () => {
       <Top>
         <IconContext.Provider value={{ color: `${Iconclr}` }}>
           <a href="#"><CgProfile ></CgProfile></a>
+          <div></div>
           <a href="#"><SiSpeedtest></SiSpeedtest></a>
           <a href="#">
             <CgFileDocument></CgFileDocument>
@@ -47,6 +48,7 @@ export default Sidebar;
 
 
 const Container = styled.nav`
+  box-shadow: 3px 3px 6px -3px #cfdbb1;
 `;
 
 const Top = styled.div`
@@ -56,9 +58,6 @@ const Top = styled.div`
   justify-content:flex-start ;
   align-items:center ;
   padding: 2rem 0 0 0;
-
-  
-
   & svg {
     cursor: pointer;
     width: 2.5rem;
