@@ -1,4 +1,5 @@
-import styled, {keyframes } from 'styled-components';
+import React ,{useState, useEffect} from 'react'
+import styled from 'styled-components';
 import { VscAccount } from 'react-icons/vsc'
 import { BsBriefcase } from 'react-icons/bs'
 import { IoIosArrowForward } from 'react-icons/io'
@@ -12,9 +13,30 @@ import { GoGift } from 'react-icons/go'
 import { AiOutlineSearch } from 'react-icons/ai'
 import { IconContext } from 'react-icons'
 
+import axios from "axios";
 
 
 const Home = () => {
+
+  const [list, setList] = useState([]);
+  const [searchVal, setSearchVal] = useState("");
+ 
+  useEffect(() => {
+    const getProductData = async () => {
+      try {
+        const response = await axios.get("https://randomuser.me/api/?results=10");
+        setList(response.data.results);
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    getProductData();
+  },[])
+
+
+  const onChangeHandler = e => {
+    setSearchVal(e.target.value);
+}
 
   return (
     <Container>
@@ -29,7 +51,11 @@ const Home = () => {
           <IconContext.Provider value={{ color: "#193f5b" }}>
             <AiOutlineSearch></AiOutlineSearch>
             </IconContext.Provider>
-          <SearchField placeholder='search'></SearchField>
+          <SearchField
+            placeholder='Search by Email'
+            type="text"
+            onChange={onChangeHandler}
+          ></SearchField>
           <AddNew>
             <IconContext.Provider value={{ color: "#fff" }}>
             <HiOutlinePlus></HiOutlinePlus></IconContext.Provider>
@@ -95,7 +121,9 @@ const Home = () => {
               </IconContext.Provider>
           </Filter>
         </Actions>
-        <DropDown>drop</DropDown>
+        <DropDown>
+          drop
+        </DropDown>
       </Board>
       <Footer>
         <p>HR Software by Freshworks | Knowledge Base</p>
@@ -132,6 +160,7 @@ const Logo = styled.div`
   & svg {
     width:3.2rem;
     height:3.2rem ;
+    cursor: pointer;
 
     &+p {
     padding:0 0 0 1.5rem;
@@ -182,6 +211,10 @@ background-color: #193f5b;
   & > a {
     margin: 0 0 0 .8rem;
     color:white;
+  }
+   &:hover {
+    background-color: #225b83;
+    box-shadow: 3px 3px 6px -3px #303030b2;
   }
 `;
 
@@ -436,3 +469,19 @@ const Footer = styled.footer`
   letter-spacing:0.1618rem;
 `;
 
+
+
+//looping code
+// {
+//             list
+//               .filter((val) => {
+//                 if (searchVal == "") { return val }
+//                 else if (val.email.toLowerCase().includes(searchVal.toLowerCase())) { 
+//                   return val;
+//                 }
+//               }).map((li) => {
+//               return (
+//                 <h3 key={li.login.uuidnd}>{li.name.title}.{li.name.first} {li.name.last}</h3>
+//                 )
+//               })
+//           }
