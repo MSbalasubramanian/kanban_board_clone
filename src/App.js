@@ -3,7 +3,6 @@ import Home from './Components/Home'
 import Sidebar from './Components/Sidebar'
 import styled from 'styled-components';
 
-import { IconContext } from 'react-icons'
 
 function App() {
   return (

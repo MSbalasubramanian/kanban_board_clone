@@ -11,8 +11,15 @@ import { BsUpload } from 'react-icons/bs'
 import { HiOutlinePlus } from 'react-icons/hi'
 import { GoGift } from 'react-icons/go'
 import { AiOutlineSearch } from 'react-icons/ai'
-import { IconContext } from 'react-icons'
+import { AiOutlineStar } from 'react-icons/ai';
+import { HiDotsVertical } from 'react-icons/hi';
+import { MdOutlineSignalWifiOff } from 'react-icons/md';
+import { IconContext } from 'react-icons';
 
+
+
+
+import { Offline, Online } from 'react-detect-offline';
 import axios from "axios";
 
 
@@ -20,11 +27,20 @@ const Home = () => {
 
   const [list, setList] = useState([]);
   const [searchVal, setSearchVal] = useState("");
+  const [len, setLen] = useState(0);
+
+  const coln = [
+    'Open',
+    'Contacted',
+    'Written Test',
+    'Technical Round',
+    'Culture Fit Round'
+  ];
  
   useEffect(() => {
     const getProductData = async () => {
       try {
-        const response = await axios.get("https://randomuser.me/api/?results=10");
+        const response = await axios.get("https://randomuser.me/api/?results=5");
         setList(response.data.results);
       } catch (err) {
         console.log(err)
@@ -36,7 +52,10 @@ const Home = () => {
 
   const onChangeHandler = e => {
     setSearchVal(e.target.value);
-}
+  }
+  
+  
+    
 
   return (
     <Container>
@@ -121,12 +140,80 @@ const Home = () => {
               </IconContext.Provider>
           </Filter>
         </Actions>
-        <DropDown>
-          drop
+        <Online>
+        <DropDown> {/*DrapDraopContext wrap below*/}
+          
+
+            {
+              coln.map((col,inx) => (
+              <DDWrapper>{/*Droppable wrap below*/}
+            <HeadCard className={`hc-${inx + 1}`} key={inx}>
+              <h1>{col}- </h1>
+              <p>{list.length}</p> {/*No. of list in col*/}
+            </HeadCard>
+
+          {
+            list
+              .filter((val) => {
+                if (searchVal == "") {
+                  
+                  return val
+                }
+                else if (val.email.toLowerCase().includes(searchVal.toLowerCase())) { 
+                  
+                  return val;
+                }
+              }).map((li,inx) => {
+                return (
+                  
+              <BodyCard key={li.login.uuid}  >
+              <Up className={`bc-${inx + 1}`}>
+                <h3>{li.name.title}.{li.name.first} {li.name.last} </h3>
+                <p>{ li.email}</p>
+              </Up>
+              <Down>
+                <IconContext.Provider value={{ color: "#15334b" }}>
+                <StarWrap>
+                  
+            <AiOutlineStar></AiOutlineStar>
+            <AiOutlineStar></AiOutlineStar>
+            <AiOutlineStar></AiOutlineStar>
+            <AiOutlineStar></AiOutlineStar>
+            <AiOutlineStar></AiOutlineStar>
+          </StarWrap>   
+          <ProfileWrap>
+            <ProfileImage src={li.picture.large}></ProfileImage>
+            <HiDotsVertical></HiDotsVertical>
+                  </ProfileWrap>
+                  </IconContext.Provider>
+          </Down>
+            </BodyCard>
+                )
+              })
+          }
+
+          </DDWrapper>
+
+            ))
+            }
+           
+            
+         
+          
         </DropDown>
+         </Online>
       </Board>
+      
+      <Offline>
+        <Model>
+          <IconContext.Provider value={{ color: "#15334b" }}>
+              <MdOutlineSignalWifiOff></MdOutlineSignalWifiOff></IconContext.Provider>
+              <p>You're offline right now. Check your connection.</p>
+            </Model>
+        </Offline>
+      
       <Footer>
-        <p>HR Software by Freshworks | Knowledge Base</p>
+        <p>HR Software by Freshworks <span>|</span> Knowledge Base</p>
       </Footer>
     </Container>
   );
@@ -134,6 +221,37 @@ const Home = () => {
 
 
 export default Home;
+
+const Model = styled.div`
+background-color: #ffffffbd;
+  position:absolute;
+  width:calc(100vw / 5);
+  height:calc(100vh / 5);
+  top:48%;
+  left:48%;
+  padding:2rem;
+  display: flex;
+  flex-direction:column ;
+  justify-content:space-evenly ;
+  align-items:center ;
+  border-radius:.5rem;
+  transition:all 250ms ease-in-out ;
+  & > svg {    
+    width:4rem;
+    height:4rem;
+    
+  }
+
+  & > p {    
+    font-size: 2rem;
+    color:#193f5b ;
+  }
+   &:hover {
+    background-color: #f7f7f757;
+    box-shadow: 6px 6px 12px -1px #52525233;
+  }
+
+`;
 
 const Container = styled.section`
   display :grid;
@@ -253,8 +371,7 @@ const Profile = styled.img`
   margin: 0 0 0 1.4rem;
 `;
 
-const Board = styled.main`
-`;
+
 
 const BreadCrumbs = styled.div`
   background-color: #fff;
@@ -384,7 +501,8 @@ const Published = styled.div`
 `;
 
 const Actions = styled.div`
-background-color: #EDEDF8;
+background-color: #ECEFF2;
+
   font-size:1.39rem ;
   display:flex;
   justify-content:space-between ;
@@ -456,8 +574,11 @@ const Filter = styled.div`
 `;
 
 const DropDown = styled.div`
-  background-color: #ededf8fb;
+  background-color: #eceff2c9;
   height:83vh;
+  display: flex;
+  align-items:center ;
+  /* justify-content:space-between ; */
 `;
 
 const Footer = styled.footer`
@@ -467,21 +588,107 @@ const Footer = styled.footer`
   color:#000000d9;
   text-align :center;  
   letter-spacing:0.1618rem;
+  
+    &  span {
+    color:#FF5555 !important;
+  
+  }
+`;
+const Board = styled.main`
+
+`;
+const DDWrapper = styled.div`
+  margin:2rem;
+  height:100%; /* Important */
+  /* width:calc(calc(100vw -  5rem) / 4); */
+
+
+`;
+const HeadCard = styled.div`
+background-color: #fff;
+width:100%;
+margin:0 0 3rem 0;
+font-size: 1.8rem;
+display: flex;
+justify-content:flex-start ;
+align-items:center;
+padding:1.3rem 1.5rem;
+
+border-radius :2px;
+
+
+
+& > h1{
+  color:#15334b;
+  font-weight:400 ;
+}
+& > p {
+  margin:0 0 0 1.2rem;
+  align-self:flex-end ;
+}
+
+`;
+const BodyCard = styled.div`
+padding:.82rem;
+  cursor: pointer;
+`;
+const Up = styled.div`
+font-size: 1.4rem;
+  background-color: #fff;
+  padding: 1rem 2rem;
+  
+  & > h3 {
+    color:#15334b;
+  }
+
+  & > p {
+    color:#225b83;
+  }
+  
+`;
+
+const Down = styled.div`
+ background-color: #FCFDFC;
+  padding:1rem 2rem;
+  display: flex;
+  justify-content:space-between ;
+  align-items:center ;
+`;
+
+const StarWrap = styled.div`
+display: flex;
+justify-content: center;
+align-items:center;
+  & > svg {
+     width:1.7rem;
+    height:1.7rem;
+    cursor: pointer;
+    margin: .5rem .8rem .5rem 0;
+  }
+`;
+
+const ProfileWrap = styled.div`
+ display: flex;
+  justify-content: space-between;
+  align-items:center;
+
+  & svg {
+    width:1.6rem;
+    height:1.6rem;
+    cursor: pointer;
+  }
+`;
+
+const ProfileImage = styled.img`
+ margin: 0 1rem 0 0;
+  width:30px;
+  height:30px;
+  object-fit:cover ;
+  border-radius:50%;
+  cursor: pointer;
+   
+  
 `;
 
 
-
 //looping code
-// {
-//             list
-//               .filter((val) => {
-//                 if (searchVal == "") { return val }
-//                 else if (val.email.toLowerCase().includes(searchVal.toLowerCase())) { 
-//                   return val;
-//                 }
-//               }).map((li) => {
-//               return (
-//                 <h3 key={li.login.uuidnd}>{li.name.title}.{li.name.first} {li.name.last}</h3>
-//                 )
-//               })
-//           }
