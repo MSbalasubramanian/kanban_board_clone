@@ -62,3 +62,7 @@ a {
 .bc-1  {
   border-left:5px solid #a7becd !important ;
 } 
+
+::selection {
+  background-color: #d8decb69;
+}

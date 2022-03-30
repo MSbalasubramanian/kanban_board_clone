@@ -17,6 +17,7 @@ import { MdOutlineSignalWifiOff } from 'react-icons/md';
 import { IconContext } from 'react-icons';
 
 
+import { DragDropContext, Droppable ,Draggable} from 'react-beautiful-dnd';
 
 
 import { Offline, Online } from 'react-detect-offline';
@@ -27,14 +28,13 @@ const Home = () => {
 
   const [list, setList] = useState([]);
   const [searchVal, setSearchVal] = useState("");
-  const [len, setLen] = useState(0);
 
   const coln = [
-    'Open',
-    'Contacted',
-    'Written Test',
-    'Technical Round',
-    'Culture Fit Round'
+    {id:'1', name: 'Open'},
+    {id:'2', name: 'Contacted'},
+    {id:'3', name: 'Written Test'},
+    {id:'4', name: 'Technical Round'},
+    {id:'5', name: 'Culture Fit Round'}
   ];
  
   useEffect(() => {
@@ -55,7 +55,9 @@ const Home = () => {
   }
   
   
-    
+  const onDragEng = (result) => {
+    //
+  }
 
   return (
     <Container>
@@ -71,7 +73,7 @@ const Home = () => {
             <AiOutlineSearch></AiOutlineSearch>
             </IconContext.Provider>
           <SearchField
-            placeholder='Search by Email'
+            placeholder='Search'
             type="text"
             onChange={onChangeHandler}
           ></SearchField>
@@ -141,66 +143,89 @@ const Home = () => {
           </Filter>
         </Actions>
         <Online>
-        <DropDown> {/*DrapDraopContext wrap below*/}
-          
+          <DragDropContext onDragEnd={onDragEng}>
+            <Droppable droppableId={`dropIN-${(list.length) + 1}`} >
+              {(provided) => {
+                return( 
+                <DropDown
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                > {/*DrapDraopContext wrap below*/}
+                
 
-            {
-              coln.map((col,inx) => (
-              <DDWrapper>{/*Droppable wrap below*/}
-            <HeadCard className={`hc-${inx + 1}`} key={inx}>
-              <h1>{col}- </h1>
-              <p>{list.length}</p> {/*No. of list in col*/}
-            </HeadCard>
+              {
+                coln.map((col, inx) => (
+                   <DDWrapper>{/*Droppable wrap below*/}
+                  <Draggable key={inx} draggableId={(inx + 1).toString()} index={inx + 1}>
+                    {(provided) => {
+                      return (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                       
+                          <HeadCard  className={`hc-${inx + 1}`} key={inx}>
+                            <h1>{col['name']}- </h1>
+                            <p>{list.length}</p> {/*No. of list in col*/}
+                          </HeadCard>
 
-          {
-            list
-              .filter((val) => {
-                if (searchVal == "") {
-                  
-                  return val
-                }
-                else if (val.email.toLowerCase().includes(searchVal.toLowerCase())) { 
-                  
-                  return val;
-                }
-              }).map((li,inx) => {
-                return (
-                  
-              <BodyCard key={li.login.uuid}  >
-              <Up className={`bc-${inx + 1}`}>
-                <h3>{li.name.title}.{li.name.first} {li.name.last} </h3>
-                <p>{ li.email}</p>
-              </Up>
-              <Down>
-                <IconContext.Provider value={{ color: "#15334b" }}>
-                <StarWrap>
-                  
-            <AiOutlineStar></AiOutlineStar>
-            <AiOutlineStar></AiOutlineStar>
-            <AiOutlineStar></AiOutlineStar>
-            <AiOutlineStar></AiOutlineStar>
-            <AiOutlineStar></AiOutlineStar>
-          </StarWrap>   
-          <ProfileWrap>
-            <ProfileImage src={li.picture.large}></ProfileImage>
-            <HiDotsVertical></HiDotsVertical>
-                  </ProfileWrap>
-                  </IconContext.Provider>
-          </Down>
-            </BodyCard>
-                )
-              })
-          }
+                          {
+                            list
+                              .filter((val) => {
+                                if (searchVal == "") {
+                                  
+                                  return val
+                                }
+                                else if (val.email.toLowerCase().includes(searchVal.toLowerCase())) { 
+                                  
+                                  return val;
+                                }
+                              }).map((li,inx) => {
+                                return (
+                                  <BodyCard key={li.login.uuid}  >
+                                    <Up className={`bc-${inx + 1}`}>
+                                      <h3>{li.name.title}.{li.name.first} {li.name.last} </h3>
+                                      <p>{ li.email}</p>
+                                    </Up>
+                                    <Down>
+                                      <IconContext.Provider value={{ color: "#15334b" }}>
+                                        <StarWrap>                        
+                                          <AiOutlineStar></AiOutlineStar>
+                                          <AiOutlineStar></AiOutlineStar>
+                                          <AiOutlineStar></AiOutlineStar>
+                                          <AiOutlineStar></AiOutlineStar>
+                                          <AiOutlineStar></AiOutlineStar>
+                                        </StarWrap>   
+                                        <ProfileWrap>
+                                            <ProfileImage src={li.picture.large}></ProfileImage>
+                                            <HiDotsVertical></HiDotsVertical>
+                                        </ProfileWrap>
+                                      </IconContext.Provider>
+                                    </Down>
+                                  </BodyCard>
+                                )
 
-          </DDWrapper>
+                              })
+                          }
+              
+                        
+                      </div>
+                      )
+                    }}
 
-            ))
+                    </Draggable> 
+                    </DDWrapper>
+              ))
             }
            
             
          
-          
-        </DropDown>
+         {provided.placeholder}
+        </DropDown>)               
+              }}
+            </Droppable>
+            </DragDropContext>
          </Online>
       </Board>
       
