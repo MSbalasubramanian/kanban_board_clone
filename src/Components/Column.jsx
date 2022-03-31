@@ -14,7 +14,7 @@ function Column({column , tasks , index ,searchVal}) {
           >
             <HeadCard className={`hc-${index + 1}`} key={index} {...provided.dragHandleProps}>
               <h1 >{column.title}</h1>
-              <p>{index}</p>
+              
             </HeadCard>
             <Droppable
               droppableId={column.id}
