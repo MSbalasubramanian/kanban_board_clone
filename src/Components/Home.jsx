@@ -1,4 +1,4 @@
-import React ,{useState, useEffect} from 'react'
+import React ,{useState} from 'react'
 import styled from 'styled-components';
 import { VscAccount } from 'react-icons/vsc'
 import { BsBriefcase } from 'react-icons/bs'
@@ -11,54 +11,104 @@ import { BsUpload } from 'react-icons/bs'
 import { HiOutlinePlus } from 'react-icons/hi'
 import { GoGift } from 'react-icons/go'
 import { AiOutlineSearch } from 'react-icons/ai'
-import { AiOutlineStar } from 'react-icons/ai';
-import { HiDotsVertical } from 'react-icons/hi';
+
 import { MdOutlineSignalWifiOff } from 'react-icons/md';
 import { IconContext } from 'react-icons';
 
 
-import { DragDropContext, Droppable ,Draggable} from 'react-beautiful-dnd';
-
-
+import { DragDropContext, Droppable} from 'react-beautiful-dnd';
+import initialData from "../api";
+import Column from './Column';
 import { Offline, Online } from 'react-detect-offline';
-import axios from "axios";
 
 
 const Home = () => {
 
-  const [list, setList] = useState([]);
   const [searchVal, setSearchVal] = useState("");
-
-  const coln = [
-    {id:'1', name: 'Open'},
-    {id:'2', name: 'Contacted'},
-    {id:'3', name: 'Written Test'},
-    {id:'4', name: 'Technical Round'},
-    {id:'5', name: 'Culture Fit Round'}
-  ];
- 
-  useEffect(() => {
-    const getProductData = async () => {
-      try {
-        const response = await axios.get("https://randomuser.me/api/?results=5");
-        setList(response.data.results);
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    getProductData();
-  },[])
-
+  const [list, setList] = useState(initialData);
 
   const onChangeHandler = e => {
+    e.preventDefault();
     setSearchVal(e.target.value);
   }
   
   
-  const onDragEng = (result) => {
-    //
-  }
 
+  const onDragEnd = (result) => {
+    const { destination, source, draggableId , type} = result;
+    
+    if (!destination) return;
+
+    if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+
+    if (type === 'column') {
+      const newColumnOrder = Array.from(list.columnOrder);
+      newColumnOrder.splice(source.index, 1);
+      newColumnOrder.splice(destination.index, 0, draggableId);
+
+      const newState = {
+        ...list,
+        columnOrder: newColumnOrder,
+      };
+
+      setList(newState);
+      return;
+
+    };
+    const start = list.columns[source.droppableId];
+    const finish = list.columns[destination.droppableId];
+    
+
+    if (start === finish) {
+      const newTaskIds = Array.from(start.taskIds);
+      newTaskIds.splice(source.index, 1);
+      newTaskIds.splice(destination.index, 0, draggableId);
+
+      const newColumn = {
+        ...start,
+        taskIds: newTaskIds,
+      };
+
+      const newState = {
+        ...list,
+        columns: {
+          ...list.columns,
+          [newColumn.id]: newColumn,
+        },
+      };
+
+      setList(newState);
+      return;
+    }
+
+    // Moving from one col to another
+    const startTaskIds = Array.from(start.taskIds);
+    startTaskIds.splice(source.index, 1);
+    const newStart = {
+      ...start,
+      taskIds: startTaskIds,
+    };
+
+    const finishTaskIds = Array.from(finish.taskIds);
+    finishTaskIds.splice(destination.index, 0, draggableId);
+    const newFinish = {
+      ...finish,
+      taskIds: finishTaskIds,
+    };
+
+    const newState = {
+        ...list,
+        columns: {
+          ...list.columns,
+          [newStart.id]: newStart,
+          [newFinish.id] : newFinish,
+        },
+    };
+
+    setList(newState)
+
+  };
+  
   return (
     <Container>
       <Header>
@@ -143,90 +193,39 @@ const Home = () => {
           </Filter>
         </Actions>
         <Online>
-          <DragDropContext onDragEnd={onDragEng}>
-            <Droppable droppableId={`dropIN-${(list.length) + 1}`} >
-              {(provided) => {
-                return( 
-                <DropDown
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                > {/*DrapDraopContext wrap below*/}
-                
-
-              {
-                coln.map((col, inx) => (
-                   <DDWrapper>{/*Droppable wrap below*/}
-                  <Draggable key={inx} draggableId={(inx + 1).toString()} index={inx + 1}>
-                    {(provided) => {
-                      return (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                       
-                          <HeadCard  className={`hc-${inx + 1}`} key={inx}>
-                            <h1>{col['name']}- </h1>
-                            <p>{list.length}</p> {/*No. of list in col*/}
-                          </HeadCard>
-
-                          {
-                            list
-                              .filter((val) => {
-                                if (searchVal == "") {
-                                  
-                                  return val
-                                }
-                                else if (val.email.toLowerCase().includes(searchVal.toLowerCase())) { 
-                                  
-                                  return val;
-                                }
-                              }).map((li,inx) => {
-                                return (
-                                  <BodyCard key={li.login.uuid}  >
-                                    <Up className={`bc-${inx + 1}`}>
-                                      <h3>{li.name.title}.{li.name.first} {li.name.last} </h3>
-                                      <p>{ li.email}</p>
-                                    </Up>
-                                    <Down>
-                                      <IconContext.Provider value={{ color: "#15334b" }}>
-                                        <StarWrap>                        
-                                          <AiOutlineStar></AiOutlineStar>
-                                          <AiOutlineStar></AiOutlineStar>
-                                          <AiOutlineStar></AiOutlineStar>
-                                          <AiOutlineStar></AiOutlineStar>
-                                          <AiOutlineStar></AiOutlineStar>
-                                        </StarWrap>   
-                                        <ProfileWrap>
-                                            <ProfileImage src={li.picture.large}></ProfileImage>
-                                            <HiDotsVertical></HiDotsVertical>
-                                        </ProfileWrap>
-                                      </IconContext.Provider>
-                                    </Down>
-                                  </BodyCard>
-                                )
-
-                              })
-                          }
-              
-                        
-                      </div>
-                      )
-                    }}
-
-                    </Draggable> 
-                    </DDWrapper>
-              ))
-            }
-           
-            
-         
-         {provided.placeholder}
-        </DropDown>)               
-              }}
-            </Droppable>
+          <DropDown>
+            <DragDropContext
+              onDragEnd={onDragEnd}
+            >
+              <Droppable
+                droppableId='all-columns' direction='horizontal' type="column"
+              > 
+                {
+                  (provided) => (
+                    <Wrapper
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                    >
+                      {
+                        list
+                          .columnOrder
+                          ?.map((columnId, index) => {
+                          const column = list.columns[columnId];
+                          const tasks = column.taskIds.map(taskId => list.tasks[taskId]);
+                          return (
+                            <Column
+                              key={column.id} column={column} tasks={tasks} index={index} searchVal={searchVal}
+                            />
+                          );
+                        })
+                        }    {provided.placeholder}
+                    </Wrapper>  
+                  )
+                }
+              </Droppable>
             </DragDropContext>
-         </Online>
+          </DropDown>
+        </Online>
       </Board>
       
       <Offline>
@@ -247,6 +246,10 @@ const Home = () => {
 
 export default Home;
 
+const Wrapper = styled.div`
+ display: flex;
+
+`;
 const Model = styled.div`
 background-color: #ffffffbd;
   position:absolute;
@@ -600,10 +603,7 @@ const Filter = styled.div`
 
 const DropDown = styled.div`
   background-color: #eceff2c9;
-  height:83vh;
   display: flex;
-  align-items:center ;
-  /* justify-content:space-between ; */
 `;
 
 const Footer = styled.footer`
@@ -622,98 +622,6 @@ const Footer = styled.footer`
 const Board = styled.main`
 
 `;
-const DDWrapper = styled.div`
-  margin:2rem;
-  height:100%; /* Important */
-  /* width:calc(calc(100vw -  5rem) / 4); */
-
-
-`;
-const HeadCard = styled.div`
-background-color: #fff;
-width:100%;
-margin:0 0 3rem 0;
-font-size: 1.8rem;
-display: flex;
-justify-content:flex-start ;
-align-items:center;
-padding:1.3rem 1.5rem;
-
-border-radius :2px;
 
 
 
-& > h1{
-  color:#15334b;
-  font-weight:400 ;
-}
-& > p {
-  margin:0 0 0 1.2rem;
-  align-self:flex-end ;
-}
-
-`;
-const BodyCard = styled.div`
-padding:.82rem;
-  cursor: pointer;
-`;
-const Up = styled.div`
-font-size: 1.4rem;
-  background-color: #fff;
-  padding: 1rem 2rem;
-  
-  & > h3 {
-    color:#15334b;
-  }
-
-  & > p {
-    color:#225b83;
-  }
-  
-`;
-
-const Down = styled.div`
- background-color: #FCFDFC;
-  padding:1rem 2rem;
-  display: flex;
-  justify-content:space-between ;
-  align-items:center ;
-`;
-
-const StarWrap = styled.div`
-display: flex;
-justify-content: center;
-align-items:center;
-  & > svg {
-     width:1.7rem;
-    height:1.7rem;
-    cursor: pointer;
-    margin: .5rem .8rem .5rem 0;
-  }
-`;
-
-const ProfileWrap = styled.div`
- display: flex;
-  justify-content: space-between;
-  align-items:center;
-
-  & svg {
-    width:1.6rem;
-    height:1.6rem;
-    cursor: pointer;
-  }
-`;
-
-const ProfileImage = styled.img`
- margin: 0 1rem 0 0;
-  width:30px;
-  height:30px;
-  object-fit:cover ;
-  border-radius:50%;
-  cursor: pointer;
-   
-  
-`;
-
-
-//looping code
