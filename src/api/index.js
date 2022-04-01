@@ -12,7 +12,7 @@ const initialData = {
   columns: {
     'column-1': {
       id: 'column-1',
-      title: 'open',
+      title: 'Open',
       taskIds : ['task-1','task-2','task-3','task-4','task-5'],
     },
     'column-2': {
@@ -22,17 +22,17 @@ const initialData = {
     },
     'column-3': {
       id: 'column-3',
-      title: 'Written Test',
+      title: 'Written test',
       taskIds : [],
     },
     'column-4': {
       id: 'column-4',
-      title: 'Technical Round',
+      title: 'Technical round',
       taskIds : [],
     },
     'column-5': {
       id: 'column-5',
-      title: 'Culture Fit Round',
+      title: 'Culture fit round',
       taskIds : [],
     },
 

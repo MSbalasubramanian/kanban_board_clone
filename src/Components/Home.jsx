@@ -145,7 +145,7 @@ const Home = () => {
           <Crumbs>
             <Jobs>
               <BsBriefcase></BsBriefcase>
-              <a href="#">jobs</a>
+              <a href="#">Jobs</a>
             </Jobs>
             <Wrap>
               <IoIosArrowForward></IoIosArrowForward>
@@ -171,7 +171,7 @@ const Home = () => {
           <ListBox>             
             <Candidates>
               <IconContext.Provider value={{ color: "#949494f8" }}>
-              <span>All Candidates -</span>
+              <span>All candidates -</span>
               <a href="#">Active (48)</a>
               <IoIosArrowDown></IoIosArrowDown>
             </IconContext.Provider>
