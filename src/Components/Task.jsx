@@ -1,6 +1,6 @@
 import React ,{useState} from 'react';import styled from 'styled-components';import { AiOutlineStar } from 'react-icons/ai';import { HiDotsVertical } from 'react-icons/hi';import { IconContext } from 'react-icons';import { Draggable } from 'react-beautiful-dnd';
 function Task({ task, index }) {
-  const [number , setNumber] = useState([1,2,3,4,5])
+  const [number ] = useState([1,2,3,4,5])
   return (<Draggable draggableId={task.id} index={index} >
       { (provided,snapshot) => (<Container {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef} isDragging = {snapshot.isDragging}>        
            <BodyCard><Up className={`bc-${index + 1}`}><h3>{task.name}</h3><p>{task.email}</p></Up>
